@@ -5,7 +5,7 @@ assert(Optishmem, "The expected function is undefined");
 
 function testSharedMemory() {
     // Get the shared memory buffer
-    const buffer = Optishmem();
+    const buffer = Optishmem("/test-shmem", 32);
 
     console.log(buffer);
   
