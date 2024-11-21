@@ -9,7 +9,7 @@ Napi::Value Method(const Napi::CallbackInfo &info)
   Napi::Env env = info.Env();
 
   // Name of the shared memory segment
-  const char *shmName = "/psm_9a87c3db";
+  const char *shmName = "/test-shmem";
 
   // Size of the shared memory segment (4 doubles)
   size_t shmSize = 4 * sizeof(double);
