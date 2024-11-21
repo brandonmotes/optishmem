@@ -1,0 +1,1 @@
+cmd_Release/optishmem-native.node := c++ -bundle -undefined dynamic_lookup -Wl,-search_paths_first -mmacosx-version-min=10.7 -arch arm64 -L./Release -stdlib=libc++  -o Release/optishmem-native.node Release/obj.target/optishmem-native/src/optishmem.o Release/nothing.a 

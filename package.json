@@ -9,14 +9,14 @@
     "rebuild": "node-gyp rebuild",
     "prebuild": "prebuild --runtime napi --all --strip --verbose",
     "upload": "prebuild --runtime napi --upload ${GITHUB_TOKEN}",
-    "prebuild-gpt": "prebuild --all"
+    "clean": "node-gyp clean configure build"
   },
   "binary": {
   "napi_versions": [3]
   },
   "gypfile": true,
   "name": "optishmem",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "A package to access shared memory.",
   "repository": {
     "type": "git",
