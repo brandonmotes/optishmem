@@ -1,11 +1,18 @@
 {
   "main": "lib/binding.js",
   "dependencies": {
-    "node-addon-api": "^1.1.0"
+    "node-addon-api": "^1.1.0",
+    "prebuild-install": "^7.1.2"
   },
   "scripts": {
-    "test": "node --napi-modules ./test/test_binding.js",
-    "build": "node-gyp clean configure build"
+    "install": "prebuild-install --runtime napi || node-gyp rebuild",
+    "rebuild": "node-gyp rebuild",
+    "prebuild": "prebuild --runtime napi --all --strip --verbose",
+    "upload": "prebuild --runtime napi --upload ${GITHUB_TOKEN}",
+    "prebuild-gpt": "prebuild --all"
+  },
+  "binary": {
+  "napi_versions": [3]
   },
   "gypfile": true,
   "name": "optishmem",
@@ -13,7 +20,7 @@
   "description": "A package to access shared memory.",
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/optigon/optishmem.git"
+    "url": "https://github.com/brandonmotes/optishmem.git"
   },
   "keywords": [
     "shared-memory"
@@ -23,5 +30,8 @@
   "bugs": {
     "url": "https://gitlab.com/optigon/optishmem/issues"
   },
-  "homepage": "https://gitlab.com/optigon/optishmem#readme"
+  "homepage": "https://gitlab.com/optigon/optishmem#readme",
+  "devDependencies": {
+    "prebuild": "^13.0.1"
+  }
 }
