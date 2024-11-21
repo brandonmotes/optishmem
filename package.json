@@ -1,0 +1,26 @@
+{
+  "main": "lib/binding.js",
+  "dependencies": {
+    "node-addon-api": "^1.1.0"
+  },
+  "scripts": {
+    "test": "node --napi-modules ./test/test_binding.js"
+  },
+  "gypfile": true,
+  "name": "optishmem",
+  "version": "1.0.0",
+  "description": "A package to access shared memory.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/optigon/optishmem.git"
+  },
+  "keywords": [
+    "shared-memory"
+  ],
+  "author": "Brandon Motes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/optigon/optishmem/issues"
+  },
+  "homepage": "https://gitlab.com/optigon/optishmem#readme"
+}
