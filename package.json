@@ -5,7 +5,7 @@
   },
   "scripts": {
     "test": "node --napi-modules ./test/test_binding.js",
-    "build": "node-gyp build"
+    "build": "node-gyp clean configure build"
   },
   "gypfile": true,
   "name": "optishmem",

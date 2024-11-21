@@ -342,7 +342,7 @@ endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
 cmd_regen_makefile = cd $(srcdir); /Users/brandon/.nvm/versions/node/v21.6.2/lib/node_modules/npm/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/Users/brandon/Library/Caches/node-gyp/21.6.2" "-Dnode_gyp_dir=/Users/brandon/.nvm/versions/node/v21.6.2/lib/node_modules/npm/node_modules/node-gyp" "-Dnode_lib_file=/Users/brandon/Library/Caches/node-gyp/21.6.2/<(target_arch)/node.lib" "-Dmodule_root_dir=/Users/brandon/repos/optishmem" "-Dnode_engine=v8" "--depth=." "-Goutput_dir=." "--generator-output=build" -I/Users/brandon/repos/optishmem/build/config.gypi -I/Users/brandon/.nvm/versions/node/v21.6.2/lib/node_modules/npm/node_modules/node-gyp/addon.gypi -I/Users/brandon/Library/Caches/node-gyp/21.6.2/include/node/common.gypi "--toplevel-dir=." binding.gyp
-Makefile: $(srcdir)/binding.gyp $(srcdir)/node_modules/node-addon-api/src/node_api.gyp $(srcdir)/../../Library/Caches/node-gyp/21.6.2/include/node/common.gypi $(srcdir)/../../.nvm/versions/node/v21.6.2/lib/node_modules/npm/node_modules/node-gyp/addon.gypi $(srcdir)/build/config.gypi
+Makefile: $(srcdir)/../../.nvm/versions/node/v21.6.2/lib/node_modules/npm/node_modules/node-gyp/addon.gypi $(srcdir)/../../Library/Caches/node-gyp/21.6.2/include/node/common.gypi $(srcdir)/binding.gyp $(srcdir)/node_modules/node-addon-api/src/node_api.gyp $(srcdir)/build/config.gypi
 	$(call do_cmd,regen_makefile)
 
 # "all" is a concatenation of the "all" targets from all the included
