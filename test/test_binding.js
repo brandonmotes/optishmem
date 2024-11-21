@@ -21,7 +21,7 @@ function testSharedMemory() {
   
     console.log('All values in shared memory are correct:', values);
 
-    values[1] = 1.1;
+    values[0] = 1.1;
   }
 
 assert.doesNotThrow(testSharedMemory, undefined, "testSharedMemory threw an expection");
