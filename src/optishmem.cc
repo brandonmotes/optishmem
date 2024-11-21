@@ -8,21 +8,31 @@ Napi::Value Method(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
 
-  // Name of the shared memory segment
-  const char *shmName = "/test-shmem";
+  // Check for the correct number of arguments
+  if (info.Length() < 2 || !info[0].IsString() || !info[1].IsNumber())
+  {
+    throw Napi::TypeError::New(env, "Expected a string (shared memory name) and a number (length) as arguments");
+  }
 
-  // Size of the shared memory segment (4 doubles)
-  size_t shmSize = 4 * sizeof(double);
+  // Get the shared memory name from the first argument
+  std::string shmName = info[0].As<Napi::String>();
+
+  // Get the shared memory length from the second argument
+  size_t shmLength = info[1].As<Napi::Number>().Uint32Value();
+  if (shmLength == 0)
+  {
+    throw Napi::Error::New(env, "Shared memory length must be greater than zero");
+  }
 
   // Open the existing shared memory object (do not create)
-  int shmFd = shm_open(shmName, O_RDWR, 0666);
+  int shmFd = shm_open(shmName.c_str(), O_RDWR, 0666);
   if (shmFd == -1)
   {
     throw Napi::Error::New(env, "Failed to open existing shared memory");
   }
 
   // Map the shared memory into the process's address space
-  void *shmPtr = mmap(nullptr, shmSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmFd, 0);
+  void *shmPtr = mmap(nullptr, shmLength, PROT_READ | PROT_WRITE, MAP_SHARED, shmFd, 0);
   if (shmPtr == MAP_FAILED)
   {
     close(shmFd);
@@ -33,12 +43,12 @@ Napi::Value Method(const Napi::CallbackInfo &info)
   close(shmFd);
 
   // Create a Napi::Buffer that directly references the shared memory
-  auto buffer = Napi::Buffer<double>::New(
+  auto buffer = Napi::Buffer<uint8_t>::New(
       env,
-      static_cast<double *>(shmPtr), // Pointer to shared memory
-      4,                             // Number of doubles
-      [](Napi::Env, void *data) {    // Finalizer to clean up
-        munmap(data, 4 * sizeof(double));
+      static_cast<uint8_t *>(shmPtr),      // Pointer to shared memory
+      shmLength,                           // Number of uint8_t
+      [shmLength](Napi::Env, void *data) { // Finalizer to clean up
+        munmap(data, shmLength);           // Correctly use shmLength for unmapping
       });
 
   return buffer;
