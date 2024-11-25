@@ -5,18 +5,15 @@
     "prebuild-install": "^7.1.2"
   },
   "scripts": {
-    "install": "prebuild-install --runtime napi || node-gyp rebuild",
-    "rebuild": "node-gyp rebuild",
-    "prebuild": "prebuild --runtime napi --all --strip --verbose",
-    "upload": "prebuild --runtime napi --upload ${GITHUB_TOKEN}",
-    "clean": "node-gyp clean configure build"
+    "test": "node ./test/test_binding.js",
+    "build": "node-gyp clean configure build"
   },
   "binary": {
   "napi_versions": [3]
   },
   "gypfile": true,
   "name": "optishmem",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "A package to access shared memory.",
   "repository": {
     "type": "git",
