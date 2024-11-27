@@ -416,7 +416,7 @@
     "python": "/Library/Frameworks/Python.framework/Versions/3.10/bin/python3",
     "standalone_static_library": 1,
     "global_prefix": "/Users/brandon/.nvm/versions/node/v21.6.2",
-    "local_prefix": "/Users/brandon/repos/react-ui",
+    "local_prefix": "/Users/brandon/repos/optishmem",
     "globalconfig": "/Users/brandon/.nvm/versions/node/v21.6.2/etc/npmrc",
     "userconfig": "/Users/brandon/.npmrc",
     "init_module": "/Users/brandon/.npm-init.js",

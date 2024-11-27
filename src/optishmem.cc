@@ -67,6 +67,27 @@ Napi::Boolean ConnectToMemory(const Napi::CallbackInfo &info)
   return Napi::Boolean::New(env, true);
 }
 
+void CleanupMemoryConnection(const Napi::CallbackInfo &info)
+{
+  // Check if the shared memory has been initialized
+  if (globalShmPtr != nullptr)
+  {
+    // Unmap the shared memory
+    munmap(globalShmPtr, globalShmLength);
+    globalShmPtr = nullptr;
+  }
+
+  if (globalShmFd != -1)
+  {
+    // Close the file descriptor
+    close(globalShmFd);
+    globalShmFd = -1;
+  }
+
+  // Reset the shared memory length
+  globalShmLength = 0;
+}
+
 Napi::Uint8Array ReadArray(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
@@ -106,6 +127,22 @@ Napi::Number ReadDouble(const Napi::CallbackInfo &info)
   return Napi::Number::New(env, value);
 }
 
+Napi::Number ReadUint32(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  // Get the shared memory length from the second argument
+  uint32_t memOffsetBytes = info[0].As<Napi::Number>().Uint32Value();
+
+  uint8_t *memPtr = static_cast<uint8_t *>(globalShmPtr) + memOffsetBytes;
+
+  uint32_t value;
+
+  memcpy(&value, memPtr, 4);
+
+  return Napi::Number::New(env, value);
+}
+
 void WriteDouble(const Napi::CallbackInfo &info)
 {
   // Napi::Env env = info.Env();
@@ -124,6 +161,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
   exports.Set(Napi::String::New(env, "ConnectToMemory"),
               Napi::Function::New(env, ConnectToMemory));
+  exports.Set(Napi::String::New(env, "CleanupMemoryConnection"),
+              Napi::Function::New(env, CleanupMemoryConnection));
   exports.Set(Napi::String::New(env, "ReadArray"),
               Napi::Function::New(env, ReadArray));
   exports.Set(Napi::String::New(env, "ReadDouble"),

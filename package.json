@@ -13,7 +13,7 @@
   },
   "gypfile": true,
   "name": "optishmem",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A package to access shared memory.",
   "repository": {
     "type": "git",

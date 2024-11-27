@@ -18,6 +18,15 @@ function testReadDouble() {
 
 }
 
+// function testReadDouble() {
+//   const result1 = Optishmem.ReadDouble(0);
+//   const result2 = Optishmem.ReadDouble(16);
+
+//   assert(Math.abs(result1 - 1.0) < 1e-10, `First expected value is approximately '1.0', got ${result1}`);
+//   assert(Math.abs(result2 - 3.0) < 1e-10, `Second expected value is approximately '3.0', got ${result2}`);
+
+// }
+
 function testWriteDouble() {
   Optishmem.WriteDouble(0, -4);
 
