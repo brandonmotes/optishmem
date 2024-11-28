@@ -169,6 +169,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
               Napi::Function::New(env, ReadDouble));
   exports.Set(Napi::String::New(env, "WriteDouble"),
               Napi::Function::New(env, WriteDouble));
+  exports.Set(Napi::String::New(env, "ReadUint32"),
+              Napi::Function::New(env, ReadUint32));
   return exports;
 }
 
