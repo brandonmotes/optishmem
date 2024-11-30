@@ -1,7 +1,11 @@
 #include <napi.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <sys/mman.h> // for shared memory
 #include <fcntl.h>    // for O_* constants
 #include <unistd.h>   // for close
+#endif
 #include <cstring>    // for memcpy
 #include <stdexcept>  // for exception handling
 
@@ -10,13 +14,16 @@
 std::string globalShmName;
 void *globalShmPtr = nullptr;
 size_t globalShmLength = 0;
+#ifdef _WIN32
+HANDLE globalShmHandle = nullptr;
+#else
 int globalShmFd = -1;
+#endif
 
 using namespace Napi;
 
 Napi::Boolean ConnectToMemory(const Napi::CallbackInfo &info)
 {
-
   Napi::Env env = info.Env();
 
   // Check for the correct number of arguments
@@ -36,25 +43,41 @@ Napi::Boolean ConnectToMemory(const Napi::CallbackInfo &info)
   }
 
   // Cleanup any previously opened shared memory
-  if (globalShmPtr != nullptr || globalShmFd != -1)
+  if (globalShmPtr != nullptr)
   {
+#ifdef _WIN32
+    UnmapViewOfFile(globalShmPtr);
+    CloseHandle(globalShmHandle);
+    globalShmHandle = nullptr;
+#else
     munmap(globalShmPtr, globalShmLength);
     close(globalShmFd);
-    globalShmPtr = nullptr;
     globalShmFd = -1;
+#endif
+    globalShmPtr = nullptr;
   }
 
-  // std::cout << "Debug: Connecting to shared memory with name: " << globalShmName.c_str() << " and size: " << globalShmLength << std::endl;
+#ifdef _WIN32
+  globalShmHandle = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, globalShmName.c_str());
+  if (globalShmHandle == nullptr)
+  {
+    throw Napi::Error::New(env, "Failed to open existing shared memory");
+  }
 
-  // Open the shared memory object (do not create)
+  globalShmPtr = MapViewOfFile(globalShmHandle, FILE_MAP_ALL_ACCESS, 0, 0, globalShmLength);
+  if (globalShmPtr == nullptr)
+  {
+    CloseHandle(globalShmHandle);
+    globalShmHandle = nullptr;
+    throw Napi::Error::New(env, "Failed to map shared memory");
+  }
+#else
   globalShmFd = shm_open(globalShmName.c_str(), O_RDWR, 0666);
-
   if (globalShmFd == -1)
   {
     throw Napi::Error::New(env, "Failed to open existing shared memory");
   }
 
-  // Map the shared memory into the process's address space
   globalShmPtr = mmap(nullptr, globalShmLength, PROT_READ | PROT_WRITE, MAP_SHARED, globalShmFd, 0);
   if (globalShmPtr == MAP_FAILED)
   {
@@ -63,6 +86,7 @@ Napi::Boolean ConnectToMemory(const Napi::CallbackInfo &info)
     globalShmLength = 0;
     throw Napi::Error::New(env, "Failed to map shared memory");
   }
+#endif
 
   return Napi::Boolean::New(env, true);
 }
@@ -72,16 +96,16 @@ void CleanupMemoryConnection(const Napi::CallbackInfo &info)
   // Check if the shared memory has been initialized
   if (globalShmPtr != nullptr)
   {
-    // Unmap the shared memory
+#ifdef _WIN32
+    UnmapViewOfFile(globalShmPtr);
+    CloseHandle(globalShmHandle);
+    globalShmHandle = nullptr;
+#else
     munmap(globalShmPtr, globalShmLength);
-    globalShmPtr = nullptr;
-  }
-
-  if (globalShmFd != -1)
-  {
-    // Close the file descriptor
     close(globalShmFd);
     globalShmFd = -1;
+#endif
+    globalShmPtr = nullptr;
   }
 
   // Reset the shared memory length
