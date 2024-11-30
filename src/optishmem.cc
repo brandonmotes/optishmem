@@ -61,15 +61,24 @@ Napi::Boolean ConnectToMemory(const Napi::CallbackInfo &info)
   globalShmHandle = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, globalShmName.c_str());
   if (globalShmHandle == nullptr)
   {
-    throw Napi::Error::New(env, "Failed to open existing shared memory");
+    DWORD error = GetLastError();
+    if (error == ERROR_FILE_NOT_FOUND)
+    {
+      throw Napi::Error::New(env, "Shared memory object not found. Error code: " + std::to_string(error));
+    }
+    else
+    {
+      throw Napi::Error::New(env, "Failed to open existing shared memory. Error code: " + std::to_string(error));
+    }
   }
 
   globalShmPtr = MapViewOfFile(globalShmHandle, FILE_MAP_ALL_ACCESS, 0, 0, globalShmLength);
   if (globalShmPtr == nullptr)
   {
+    DWORD error = GetLastError();
     CloseHandle(globalShmHandle);
     globalShmHandle = nullptr;
-    throw Napi::Error::New(env, "Failed to map shared memory");
+    throw Napi::Error::New(env, "Failed to map shared memory. Error code: " + std::to_string(error));
   }
 #else
   globalShmFd = shm_open(globalShmName.c_str(), O_RDWR, 0666);
